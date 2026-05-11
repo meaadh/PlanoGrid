@@ -1,0 +1,2567 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <!-- iOS home screen -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-title" content="PlanoGrid" />
+    <meta name="theme-color" content="#1a3c5e" />
+    <title>PlanoGrid</title>
+    <link rel="icon" type="image/x-icon" href="favicon_io/favicon.ico" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="favicon_io/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="favicon_io/favicon-16x16.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="favicon_io/apple-touch-icon.png"
+    />
+    <link rel="manifest" href="favicon_io/site.webmanifest" />
+    <style>
+      /* ── RESET ───────────────────────────────────────── */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f0f2f5;
+        color: #222;
+        min-height: 100vh;
+      }
+
+      /* ── NAV ─────────────────────────────────────────── */
+      .nav {
+        background: #1a3c5e;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        height: 48px;
+        position: sticky;
+        top: 0;
+        z-index: 300;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      }
+      .nav-brand {
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: 0.4px;
+        margin-right: 24px;
+        white-space: nowrap;
+      }
+      .nav-tabs {
+        display: flex;
+        height: 100%;
+      }
+      .nav-tab {
+        padding: 0 18px;
+        cursor: pointer;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.6);
+        border-bottom: 3px solid transparent;
+        display: flex;
+        align-items: center;
+        transition: all 0.15s;
+        user-select: none;
+      }
+      .nav-tab:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .nav-tab.active {
+        color: #fff;
+        border-bottom-color: #4fc3f7;
+      }
+      .nav-right {
+        margin-left: auto;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      /* ── BUTTONS ─────────────────────────────────────── */
+      .btn {
+        padding: 6px 14px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        transition: background 0.15s;
+      }
+      .btn-primary {
+        background: #1a3c5e;
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: #245278;
+      }
+      .btn-light {
+        background: #e8edf2;
+        color: #1a3c5e;
+      }
+      .btn-light:hover {
+        background: #d0dae5;
+      }
+      .btn-sm {
+        padding: 4px 10px;
+        font-size: 12px;
+      }
+      .btn-danger {
+        background: #fee2e2;
+        color: #dc2626;
+      }
+      .btn-danger:hover {
+        background: #fca5a5;
+      }
+
+      /* ── PAGES ───────────────────────────────────────── */
+      .page {
+        display: none;
+        padding: 18px;
+      }
+      .page.active {
+        display: block;
+      }
+
+      /* ── CARD ────────────────────────────────────────── */
+      .card {
+        background: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+      }
+      .card-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: #1a3c5e;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        margin-bottom: 16px;
+      }
+
+      /* ── PRODUCTS TABLE ──────────────────────────────── */
+      .product-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .product-table th {
+        background: #1a3c5e;
+        color: #fff;
+        padding: 9px 12px;
+        text-align: left;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+      }
+      .product-table td {
+        padding: 10px 12px;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 13px;
+        vertical-align: middle;
+      }
+      .product-table tbody tr:last-child td {
+        border-bottom: none;
+      }
+      .product-table tbody tr:hover td {
+        background: #f8fafc;
+      }
+      .color-swatch {
+        width: 26px;
+        height: 26px;
+        border-radius: 4px;
+        display: inline-block;
+        border: 1px solid rgba(0, 0, 0, 0.15);
+      }
+
+      /* ── BUILDER LAYOUT ──────────────────────────────── */
+      .builder-layout {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      /* Config bar */
+      .config-bar {
+        background: #fff;
+        border-radius: 8px;
+        padding: 14px 18px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        align-items: flex-end;
+      }
+      .cfg-group {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+      }
+      .cfg-group label {
+        font-size: 10px;
+        font-weight: 700;
+        color: #888;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .cfg-group input {
+        border: 1px solid #d4d4d4;
+        border-radius: 4px;
+        padding: 6px 9px;
+        font-size: 13px;
+        color: #333;
+      }
+      .cfg-group input:focus {
+        outline: none;
+        border-color: #4a90d9;
+        box-shadow: 0 0 0 2px rgba(74, 144, 217, 0.15);
+      }
+      .cfg-wide {
+        width: 155px;
+      }
+      .cfg-date {
+        width: 145px;
+      }
+      .cfg-num {
+        width: 65px;
+      }
+      .cfg-sep {
+        width: 1px;
+        background: #e0e0e0;
+        height: 38px;
+        align-self: center;
+      }
+
+      /* Builder main split */
+      .builder-main {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+      }
+      .planogram-wrapper {
+        flex: 1;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      .planogram-container {
+        background: #fff;
+        border-radius: 8px;
+        padding: 16px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        min-width: fit-content;
+      }
+
+      /* ── SIDEBAR ─────────────────────────────────────── */
+      .sidebar {
+        width: 215px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        position: sticky;
+        top: 14px;
+        max-height: calc(100vh - 80px);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+      }
+      .sidebar-section {
+        background: #fff;
+        border-radius: 8px;
+        padding: 14px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+      }
+      .sidebar-title {
+        font-size: 11px;
+        font-weight: 700;
+        color: #1a3c5e;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .clear-label-btn {
+        width: 22px;
+        height: 22px;
+        border-radius: 3px;
+        background: #e0e0e0;
+        border: none;
+        cursor: pointer;
+        color: #999;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: all 0.12s;
+        text-transform: none;
+        letter-spacing: 0;
+        padding: 0;
+      }
+      .clear-label-btn:hover {
+        background: #fee2e2;
+        color: #dc2626;
+      }
+
+      /* Palette */
+      .palette-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 7px;
+        border-radius: 5px;
+        cursor: pointer;
+        border: 2px solid transparent;
+        margin-bottom: 3px;
+        transition: all 0.12s;
+      }
+      .palette-item:hover {
+        background: #f0f5ff;
+        border-color: #c5d8ff;
+      }
+      .palette-item.active {
+        background: #e8f0fe;
+        border-color: #1a3c5e;
+      }
+      .palette-chip {
+        width: 22px;
+        height: 34px;
+        border-radius: 3px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: 700;
+        color: #fff;
+        border: 1px solid rgba(0, 0, 0, 0.15);
+      }
+      .palette-name {
+        font-size: 13px;
+        font-weight: 700;
+        color: #333;
+      }
+      .palette-size {
+        font-size: 10px;
+        color: #999;
+      }
+      .eraser-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 7px;
+        border-radius: 5px;
+        cursor: pointer;
+        border: 2px solid transparent;
+        margin-top: 8px;
+        border-top: 2px solid #f0f0f0;
+        transition: all 0.12s;
+      }
+      .eraser-row:hover {
+        background: #fff0f0;
+        border-color: #fca5a5;
+      }
+      .eraser-row.active {
+        background: #fee2e2;
+        border-color: #dc2626;
+      }
+      .eraser-chip {
+        width: 22px;
+        height: 22px;
+        border-radius: 3px;
+        background: #e0e0e0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        color: #999;
+        flex-shrink: 0;
+      }
+
+      /* Shelf widths */
+      .sw-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 3px 0;
+        border-bottom: 1px solid #f5f5f5;
+        font-size: 12px;
+      }
+      .sw-row:last-child {
+        border-bottom: none;
+      }
+      .sw-row label {
+        flex: 1;
+        color: #555;
+      }
+      .sw-row input {
+        width: 48px;
+        padding: 3px 5px;
+        border: 1px solid #d4d4d4;
+        border-radius: 3px;
+        font-size: 12px;
+        text-align: center;
+      }
+
+      /* Summary */
+      .sum-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+      }
+      .sum-table td {
+        padding: 5px 4px;
+        border-bottom: 1px solid #f0f0f0;
+      }
+      .sum-table td:first-child {
+        color: #666;
+      }
+      .sum-table td:last-child {
+        font-weight: 700;
+        text-align: right;
+        color: #1a3c5e;
+      }
+      .sum-table tr:last-child td {
+        border-bottom: none;
+      }
+
+      /* ── PLANOGRAM GRID ───────────────────────────────── */
+      .plano-header {
+        margin-bottom: 10px;
+      }
+      .plano-title {
+        font-size: 15px;
+        font-weight: 800;
+        color: #1a3c5e;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        margin-bottom: 5px;
+      }
+      .plano-meta {
+        display: flex;
+        gap: 20px;
+        font-size: 12px;
+        color: #555;
+        flex-wrap: wrap;
+      }
+
+      .product-key {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 12px;
+        padding: 8px 10px;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        background: #f9fafb;
+        align-items: center;
+      }
+      .key-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: #888;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-right: 4px;
+      }
+      .key-item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 11px;
+        color: #333;
+      }
+      .key-chip {
+        width: 16px;
+        height: 24px;
+        border-radius: 2px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 8px;
+        font-weight: 700;
+        color: #fff;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+      }
+
+      .plano-table {
+        border-collapse: collapse;
+      }
+      .plano-table th.corner {
+        background: #1a3c5e;
+        color: #fff;
+        font-size: 11px;
+        font-weight: 700;
+        text-align: center;
+        padding: 6px 10px;
+        min-width: 50px;
+      }
+      .plano-table th.door-hdr {
+        padding: 7px 6px;
+        text-align: center;
+        font-size: 11px;
+        font-weight: 700;
+        color: #fff;
+        white-space: nowrap;
+        min-width: 70px;
+        cursor: pointer;
+      }
+      .plano-table th.door-hdr:hover {
+        filter: brightness(1.18);
+      }
+      .door-name-input {
+        width: 70px;
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.8);
+        color: #fff;
+        font-size: 11px;
+        font-weight: 700;
+        text-align: center;
+        outline: none;
+        padding: 1px 0;
+      }
+      .plano-table td.shelf-num {
+        background: #1a3c5e;
+        color: #fff;
+        text-align: center;
+        font-weight: 700;
+        font-size: 12px;
+        padding: 4px 8px;
+        vertical-align: middle;
+      }
+      .plano-table td.door-cell {
+        border: 1px solid #ddd;
+        padding: 3px 4px;
+        vertical-align: top;
+        background: #fafafa;
+      }
+
+      .slots-row {
+        display: flex;
+        gap: 2px;
+        flex-wrap: nowrap;
+      }
+      .slot {
+        width: 45px;
+        height: 44px;
+        border-radius: 3px;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        padding-bottom: 2px;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        transition:
+          transform 0.1s,
+          box-shadow 0.1s;
+        flex-shrink: 0;
+        position: relative;
+      }
+      .slot:hover {
+        transform: scale(1.1);
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+        z-index: 50;
+      }
+      .slot.empty {
+        background: #e8e8e8;
+        border: 1px dashed #bbb;
+      }
+      .slot.empty:hover {
+        background: #d5d5d5;
+      }
+      .slot-num {
+        font-size: 10px;
+        font-weight: 800;
+        color: #fff;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+        line-height: 1;
+      }
+      .slot.empty .slot-num {
+        color: #bbb;
+        text-shadow: none;
+      }
+
+      /* ── EDIT MODAL ──────────────────────────────────── */
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .modal-box {
+        background: #fff;
+        border-radius: 10px;
+        padding: 26px;
+        width: 420px;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+      }
+      .modal-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #1a3c5e;
+        margin-bottom: 20px;
+      }
+      .modal-field {
+        margin-bottom: 14px;
+      }
+      .modal-field label {
+        display: block;
+        font-size: 11px;
+        font-weight: 700;
+        color: #888;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        margin-bottom: 5px;
+      }
+      .modal-field input {
+        width: 100%;
+        border: 1px solid #d4d4d4;
+        border-radius: 4px;
+        padding: 8px 10px;
+        font-size: 14px;
+        color: #333;
+      }
+      .modal-field input:focus {
+        outline: none;
+        border-color: #4a90d9;
+        box-shadow: 0 0 0 2px rgba(74, 144, 217, 0.15);
+      }
+      .modal-field input[type="color"] {
+        height: 40px;
+        padding: 2px 4px;
+        cursor: pointer;
+      }
+      .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 20px;
+      }
+
+      /* ── CUSTOM CONFIRM DIALOG ───────────────────────── */
+      .confirm-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.55);
+        z-index: 2000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .confirm-box {
+        background: #fff;
+        border-radius: 16px;
+        padding: 30px 26px 24px;
+        width: 100%;
+        max-width: 340px;
+        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35);
+        text-align: center;
+      }
+      .confirm-message {
+        font-size: 17px;
+        font-weight: 600;
+        color: #1a3c5e;
+        line-height: 1.45;
+        margin-bottom: 26px;
+      }
+      .confirm-buttons {
+        display: flex;
+        gap: 12px;
+      }
+      .confirm-btn {
+        flex: 1;
+        padding: 0;
+        height: 56px;
+        border: none;
+        border-radius: 10px;
+        font-size: 17px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: filter 0.12s;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+      }
+      .confirm-btn:active {
+        filter: brightness(0.88);
+      }
+      .confirm-cancel {
+        background: #e8edf2;
+        color: #444;
+      }
+      .confirm-ok {
+        background: #1a3c5e;
+        color: #fff;
+      }
+      .confirm-ok.danger {
+        background: #dc2626;
+      }
+
+      /* ── BRAND ROW ───────────────────────────────────── */
+      .brand-row-header {
+        display: flex;
+        gap: 2px;
+        margin-bottom: 2px;
+        min-height: 16px;
+      }
+      .brand-row-seg {
+        min-height: 16px;
+        max-height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: 800;
+        color: #fff;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        padding: 1px 3px;
+        border-radius: 2px;
+        flex-shrink: 0;
+        letter-spacing: 0.3px;
+      }
+      .brand-row-seg.no-brand-row {
+        background: transparent;
+      }
+
+      /* ── FLAVOR LABELS ────────────────────────────────── */
+      .flavor-header {
+        display: flex;
+        gap: 2px;
+        margin-bottom: 2px;
+        min-height: 16px;
+      }
+      .flavor-seg {
+        min-height: 16px;
+        max-height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: 800;
+        color: #fff;
+        overflow: hidden;
+        white-space: normal;
+        word-break: break-word;
+        text-align: center;
+        line-height: 1.2;
+        border-radius: 2px 2px 0 0;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        padding: 1px 2px;
+        flex-shrink: 0;
+      }
+      .flavor-seg.no-flavor {
+        background: transparent;
+      }
+      .flavor-input-wrap {
+        padding: 6px 0 2px;
+      }
+      .flavor-input-wrap input {
+        width: 100%;
+        border: 1px solid #d4d4d4;
+        border-radius: 4px;
+        padding: 6px 9px;
+        font-size: 13px;
+        color: #333;
+      }
+      .flavor-input-wrap input:focus {
+        outline: none;
+        border-color: #4a90d9;
+        box-shadow: 0 0 0 2px rgba(74, 144, 217, 0.15);
+      }
+      .flavor-hint {
+        font-size: 10px;
+        color: #aaa;
+        margin-top: 6px;
+        margin-bottom: 4px;
+      }
+      .sidebar-section.paint-active {
+        outline: 2px solid #4a90d9;
+        outline-offset: -2px;
+      }
+      @media (hover: none) and (pointer: coarse) {
+        #brand-label-section,
+        #flavor-label-section {
+          cursor: pointer;
+          touch-action: manipulation;
+        }
+      }
+
+      /* ── CELL LEGEND ─────────────────────────────────── */
+      .cell-legend {
+        margin-top: 4px;
+        display: grid;
+        grid-template-rows: repeat(5, auto);
+        grid-auto-flow: column;
+        gap: 1px 10px;
+        align-items: center;
+      }
+      .cell-legend-item {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        padding: 1px 0;
+      }
+      .cell-legend-num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 13px;
+        height: 13px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        color: #fff;
+        font-size: 8px;
+        font-weight: 800;
+        border: 1px solid rgba(0, 0, 0, 0.18);
+      }
+      .cell-legend-flavor {
+        font-size: 12px;
+        font-weight: 600;
+        color: #333;
+        line-height: 1.2;
+      }
+
+      /* ── TABLET / TOUCH ─────────────────────────────── */
+      /* Disable sticky hover effect on touch screens */
+      @media (hover: none) and (pointer: coarse) {
+        .slot:hover {
+          transform: none;
+          box-shadow: none;
+          z-index: auto;
+        }
+        .slot.empty:hover {
+          background: #e8e8e8;
+        }
+        /* Bigger tap targets in sidebar */
+        .palette-item {
+          padding: 10px 7px;
+        }
+        .eraser-row {
+          padding: 11px 7px;
+        }
+        /* Prevent iOS auto-zoom on input focus (triggers when font-size < 16px) */
+        input,
+        select,
+        textarea {
+          font-size: 16px !important;
+        }
+      }
+
+      /* Portrait / narrow: stack sidebar below planogram */
+      @media (max-width: 860px) {
+        .builder-main {
+          flex-direction: column;
+        }
+        .sidebar {
+          width: 100%;
+          flex-direction: row;
+          flex-wrap: wrap;
+          max-height: none;
+        }
+        .sidebar-section {
+          flex: 1;
+          min-width: 190px;
+        }
+        .page {
+          padding: 10px;
+        }
+        .config-bar {
+          padding: 10px 12px;
+          gap: 10px;
+        }
+        .cfg-wide {
+          width: 130px;
+        }
+        .cfg-date {
+          width: 130px;
+        }
+      }
+
+      /* Responsive modal */
+      @media (max-width: 500px) {
+        .modal-box {
+          width: calc(100vw - 32px);
+          padding: 18px;
+        }
+      }
+
+      /* ── PRINT ───────────────────────────────────────── */
+      @page {
+        size: landscape;
+        margin: 8mm;
+      }
+      @media print {
+        * {
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+        .nav,
+        .config-bar,
+        .sidebar,
+        .no-print,
+        #page-products {
+          display: none !important;
+        }
+        #page-builder {
+          display: block !important;
+          padding: 0 !important;
+        }
+        .builder-layout,
+        .builder-main {
+          display: block !important;
+        }
+        body {
+          background: #fff !important;
+        }
+        .planogram-wrapper,
+        .planogram-container {
+          display: none !important;
+        }
+        #print-planogram {
+          display: block !important;
+        }
+        .print-page {
+          margin-bottom: 0;
+        }
+        .print-page.page-break {
+          page-break-after: always;
+          break-after: page;
+        }
+        .plano-table thead {
+          display: table-header-group;
+        }
+        .plano-table tbody tr {
+          page-break-inside: avoid;
+          break-inside: avoid;
+        }
+        .slot {
+          width: 38px !important;
+          height: 28px !important;
+        }
+        .slot:hover {
+          transform: none !important;
+          box-shadow: none !important;
+        }
+        .brand-row-seg {
+          max-height: 28px !important;
+          font-size: 9px !important;
+        }
+        .brand-row-header {
+          min-height: 16px !important;
+        }
+        .flavor-seg {
+          max-height: 28px !important;
+          font-size: 9px !important;
+        }
+        .cell-legend {
+          margin-top: 2px !important;
+        }
+        .cell-legend-num {
+          width: 12px !important;
+          height: 12px !important;
+          font-size: 8px !important;
+        }
+        .cell-legend-flavor {
+          font-size: 12px !important;
+        }
+        .flavor-header {
+          min-height: 14px !important;
+        }
+        .plano-title {
+          font-size: 13px !important;
+        }
+        .plano-meta {
+          font-size: 10px !important;
+        }
+        .product-key {
+          font-size: 10px !important;
+          padding: 5px 8px !important;
+        }
+        .key-chip {
+          width: 14px !important;
+          height: 20px !important;
+          font-size: 8px !important;
+        }
+        .plano-table th.corner {
+          font-size: 9px !important;
+          min-width: 35px !important;
+          padding: 4px 5px !important;
+        }
+        .plano-table th.door-hdr {
+          font-size: 9px !important;
+          padding: 4px 3px !important;
+          min-width: 40px !important;
+        }
+        .plano-table td.shelf-num {
+          font-size: 10px !important;
+          padding: 2px 5px !important;
+        }
+        .plano-table td.door-cell {
+          padding: 2px 3px !important;
+        }
+        .slot-num {
+          font-size: 9px !important;
+        }
+        .print-page-header {
+          margin-bottom: 5px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ═══ NAV ═══ -->
+    <nav class="nav">
+      <span class="nav-brand"
+        ><img
+          src="Monogram.png"
+          alt=""
+          style="
+            height: 32px;
+            width: auto;
+            vertical-align: middle;
+            margin-right: 8px;
+            filter: invert(1);
+          "
+        />
+        PlanoGrid</span
+      >
+      <div class="nav-tabs">
+        <div class="nav-tab" onclick="showPage('products', this)">
+          Products Size
+        </div>
+        <div class="nav-tab active" onclick="showPage('builder', this)">
+          Builder
+        </div>
+      </div>
+      <div class="nav-right no-print">
+        <button class="btn btn-danger btn-sm" onclick="resetAll()">
+          Reset
+        </button>
+        <button class="btn btn-light btn-sm" onclick="window.print()">
+          &#128438; Print
+        </button>
+      </div>
+    </nav>
+
+    <!-- ═══ PRODUCTS PAGE ═══ -->
+    <div class="page" id="page-products">
+      <div class="card">
+        <div class="card-title">Drink Product List Sizes</div>
+        <table class="product-table">
+          <thead>
+            <tr>
+              <th style="width: 40px">#</th>
+              <th style="width: 50px">Color</th>
+              <th>Product Name</th>
+              <th style="width: 80px">Size</th>
+              <th>Description</th>
+              <th style="width: 70px"></th>
+            </tr>
+          </thead>
+          <tbody id="product-tbody"></tbody>
+        </table>
+        <div style="margin-top: 16px">
+          <button class="btn btn-primary" onclick="openAddModal()">
+            + Add Product Size
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ BUILDER PAGE ═══ -->
+    <div class="page active" id="page-builder">
+      <div class="builder-layout">
+        <!-- Config bar -->
+        <div class="config-bar no-print">
+          <div class="cfg-group">
+            <label>Store Name</label>
+            <input
+              type="text"
+              class="cfg-wide"
+              id="cfg-store"
+              placeholder="Store name…"
+              oninput="updateMeta()"
+            />
+          </div>
+          <div class="cfg-group">
+            <label>Type of Planogram</label>
+            <input
+              type="text"
+              class="cfg-wide"
+              id="cfg-type"
+              placeholder="e.g. Cooler, Freezer…"
+              oninput="updateMeta()"
+            />
+          </div>
+          <div class="cfg-group">
+            <label>Date</label>
+            <input
+              type="date"
+              class="cfg-date"
+              id="cfg-date"
+              oninput="updateMeta()"
+            />
+          </div>
+          <div class="cfg-group">
+            <label>Planogram By</label>
+            <input
+              type="text"
+              class="cfg-wide"
+              id="cfg-by"
+              placeholder="Your name…"
+              oninput="updateMeta()"
+            />
+          </div>
+          <div class="cfg-sep"></div>
+          <div class="cfg-group">
+            <label>Doors</label>
+            <input
+              type="number"
+              class="cfg-num"
+              id="cfg-doors"
+              value="8"
+              min="1"
+              max="20"
+            />
+          </div>
+          <div class="cfg-group">
+            <label>Shelves</label>
+            <input
+              type="number"
+              class="cfg-num"
+              id="cfg-shelves"
+              value="8"
+              min="1"
+              max="20"
+            />
+          </div>
+          <div class="cfg-group">
+            <label>Slots / Shelf</label>
+            <input
+              type="number"
+              class="cfg-num"
+              id="cfg-slots"
+              value="10"
+              min="1"
+              max="30"
+            />
+          </div>
+          <div class="cfg-group">
+            <label>&nbsp;</label>
+            <button class="btn btn-primary" onclick="applyConfig()">
+              Apply Layout
+            </button>
+          </div>
+        </div>
+
+        <div class="builder-main">
+          <!-- Planogram -->
+          <div class="planogram-wrapper">
+            <div class="planogram-container" id="planogram-container">
+              <p style="color: #999; font-size: 13px">
+                Click <strong>Apply Layout</strong> to build the planogram.
+              </p>
+            </div>
+          </div>
+
+          <!-- Sidebar -->
+          <div class="sidebar no-print">
+            <div class="sidebar-section">
+              <div class="sidebar-title">Products</div>
+              <div id="palette"></div>
+              <div
+                class="eraser-row"
+                id="eraser-row"
+                onclick="selectProduct(null)"
+              >
+                <div class="eraser-chip">✕</div>
+                <div>
+                  <div class="palette-name">Eraser</div>
+                  <div class="palette-size">Clear slot</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="sidebar-section paint-active" id="brand-label-section">
+              <div class="sidebar-title">
+                Brand Label<button
+                  class="clear-label-btn"
+                  onclick="clearBrandLabel()"
+                  title="Clear brand"
+                >
+                  ↺
+                </button>
+              </div>
+              <div class="flavor-input-wrap">
+                <input
+                  type="text"
+                  id="active-top-brand"
+                  placeholder="e.g. PEPSI, COKE…"
+                  autocomplete="off"
+                  onfocus="setPaintMode('brand')"
+                />
+              </div>
+              <div class="flavor-hint">Type a brand, then paint slots</div>
+              <div
+                id="top-brand-history"
+                style="
+                  margin-top: 6px;
+                  display: flex;
+                  flex-wrap: wrap;
+                  gap: 4px;
+                "
+              ></div>
+            </div>
+
+            <div class="sidebar-section" id="flavor-label-section">
+              <div class="sidebar-title">
+                Flavor Label<button
+                  class="clear-label-btn"
+                  onclick="clearFlavorLabel()"
+                  title="Clear flavor"
+                >
+                  ↺
+                </button>
+              </div>
+              <div class="flavor-input-wrap">
+                <input
+                  type="text"
+                  id="active-flavor"
+                  placeholder="e.g. MTN DEW, PEPSI…"
+                  autocomplete="off"
+                  onfocus="setPaintMode('flavor')"
+                />
+              </div>
+              <div class="flavor-hint">Type a flavor, then paint slots</div>
+              <div
+                id="flavor-history"
+                style="
+                  margin-top: 6px;
+                  display: flex;
+                  flex-wrap: wrap;
+                  gap: 4px;
+                "
+              ></div>
+            </div>
+
+            <div class="sidebar-section">
+              <div class="sidebar-title">Shelf Widths (slots)</div>
+              <div id="sw-controls"></div>
+            </div>
+
+            <div class="sidebar-section">
+              <div class="sidebar-title">Summary</div>
+              <table class="sum-table" id="sum-table"></table>
+            </div>
+          </div>
+        </div>
+
+        <div id="print-planogram" style="display: none"></div>
+      </div>
+    </div>
+
+    <!-- ═══ EDIT MODAL ═══ -->
+    <div
+      class="modal-backdrop"
+      id="edit-modal"
+      style="display: none"
+      onclick="onBackdropClick(event)"
+    >
+      <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-title" id="modal-title">Edit Product</div>
+        <div class="modal-field">
+          <label>Product Name</label>
+          <input type="text" id="edit-name" />
+        </div>
+        <div class="modal-field">
+          <label>Size (e.g. 32 oz)</label>
+          <input type="text" id="edit-size" />
+        </div>
+        <div class="modal-field">
+          <label>Description</label>
+          <input type="text" id="edit-desc" />
+        </div>
+        <div class="modal-field">
+          <label>Display Color</label>
+          <input type="color" id="edit-color" />
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-light" onclick="closeModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="saveProduct()">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ CUSTOM CONFIRM DIALOG ═══ -->
+    <div class="confirm-backdrop" id="confirm-modal" style="display: none">
+      <div class="confirm-box">
+        <div class="confirm-message" id="confirm-message"></div>
+        <div class="confirm-buttons">
+          <button class="confirm-btn confirm-cancel" id="confirm-cancel-btn">
+            Cancel
+          </button>
+          <button class="confirm-btn confirm-ok" id="confirm-ok-btn">OK</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ═══════════════════════════════════════════════════
+      //  CUSTOM DIALOGS
+      // ═══════════════════════════════════════════════════
+      function showConfirm(message, danger) {
+        return new Promise((resolve) => {
+          document.getElementById("confirm-message").textContent = message;
+          const okBtn = document.getElementById("confirm-ok-btn");
+          const cancelBtn = document.getElementById("confirm-cancel-btn");
+          okBtn.classList.toggle("danger", !!danger);
+          cancelBtn.style.display = "";
+          const modal = document.getElementById("confirm-modal");
+          modal.style.display = "flex";
+          function cleanup() {
+            modal.style.display = "none";
+            okBtn.removeEventListener("click", onOk);
+            cancelBtn.removeEventListener("click", onCancel);
+          }
+          function onOk() {
+            cleanup();
+            resolve(true);
+          }
+          function onCancel() {
+            cleanup();
+            resolve(false);
+          }
+          okBtn.addEventListener("click", onOk);
+          cancelBtn.addEventListener("click", onCancel);
+        });
+      }
+
+      function showAlert(message) {
+        return new Promise((resolve) => {
+          document.getElementById("confirm-message").textContent = message;
+          const okBtn = document.getElementById("confirm-ok-btn");
+          const cancelBtn = document.getElementById("confirm-cancel-btn");
+          okBtn.classList.remove("danger");
+          cancelBtn.style.display = "none";
+          const modal = document.getElementById("confirm-modal");
+          modal.style.display = "flex";
+          function cleanup() {
+            modal.style.display = "none";
+            okBtn.removeEventListener("click", onOk);
+          }
+          function onOk() {
+            cleanup();
+            resolve();
+          }
+          okBtn.addEventListener("click", onOk);
+        });
+      }
+
+      // ═══════════════════════════════════════════════════
+      //  DEFAULT DATA
+      // ═══════════════════════════════════════════════════
+      const DEFAULT_PRODUCTS = [
+        {
+          id: 1,
+          name: "32oz Tall Plastic Bottle",
+          size: "32 oz",
+          desc: "Tall Plastic Bottle",
+          color: "#4A90D9",
+        },
+        {
+          id: 2,
+          name: "20oz Plastic Bottle",
+          size: "20 oz",
+          desc: "Plastic Bottle",
+          color: "#5CB85C",
+        },
+        {
+          id: 3,
+          name: "7.5oz Can",
+          size: "7.5 oz",
+          desc: "Mini Can",
+          color: "#C0392B",
+        },
+        {
+          id: 4,
+          name: "8.4oz Can",
+          size: "8.4 oz",
+          desc: "Energy Can",
+          color: "#08c7c7",
+        },
+        {
+          id: 5,
+          name: "12oz Can",
+          size: "12 oz",
+          desc: "Standard Can",
+          color: "#F08913",
+        },
+        {
+          id: 6,
+          name: "16oz Can",
+          size: "16 oz",
+          desc: "Standard Can",
+          color: "#9B59B6",
+        },
+        {
+          id: 7,
+          name: "20oz Can",
+          size: "20 oz",
+          desc: "Standard Can",
+          color: "#2980B9",
+        },
+        {
+          id: 8,
+          name: "24oz Can",
+          size: "24 oz",
+          desc: "Tall Can",
+          color: "#E74C3C",
+        },
+        {
+          id: 9,
+          name: "28oz Wide Plastic Bottle",
+          size: "28 oz",
+          desc: "Wide Plastic Bottle",
+          color: "#1ABC9C",
+        },
+        {
+          id: 10,
+          name: "2L Plastic Bottle",
+          size: "2 L",
+          desc: "2 Liter Plastic Bottle",
+          color: "#E67E22",
+        },
+      ];
+
+      const DOOR_COLORS = [
+        "#2563eb",
+        "#65a30d",
+        "#d97706",
+        "#7c3aed",
+        "#dc2626",
+        "#0891b2",
+        "#db2777",
+        "#059669",
+        "#b45309",
+        "#4f46e5",
+        "#0d9488",
+        "#be123c",
+      ];
+
+      const FLAVOR_COLORS = [
+        "#558b2f", // olive green
+        "#1565c0", // deep blue
+        "#2e7d32", // forest green
+        "#e65100", // burnt orange
+        "#6a1b9a", // deep purple
+        "#006064", // dark teal
+        "#880e4f", // deep magenta
+        "#37474f", // blue-grey
+        "#4e342e", // dark brown
+        "#0277bd", // steel blue
+      ];
+
+      let _flavorColorMap = {};
+      let _flavorColorCounter = 0;
+
+      function resetFlavorColorMap() {
+        _flavorColorMap = {};
+        _flavorColorCounter = 0;
+        for (let s = 0; s < S.shelves; s++)
+          for (let d = 0; d < S.doors; d++)
+            for (const b of S.flavorGrid[s]?.[d] || [])
+              if (b && !_flavorColorMap[b]) {
+                _flavorColorMap[b] =
+                  FLAVOR_COLORS[_flavorColorCounter % FLAVOR_COLORS.length];
+                _flavorColorCounter++;
+              }
+      }
+
+      function getFlavorColor(flavorName) {
+        if (!flavorName) return "#888";
+        if (!_flavorColorMap[flavorName]) {
+          _flavorColorMap[flavorName] =
+            FLAVOR_COLORS[_flavorColorCounter % FLAVOR_COLORS.length];
+          _flavorColorCounter++;
+        }
+        return _flavorColorMap[flavorName];
+      }
+
+      // ═══════════════════════════════════════════════════
+      //  STATE
+      // ═══════════════════════════════════════════════════
+      let S; // main state
+      let activePid = 1; // selected product id (null = eraser)
+      let editingPid = null;
+
+      function defaultState() {
+        return {
+          products: JSON.parse(JSON.stringify(DEFAULT_PRODUCTS)),
+          meta: { store: "", date: "", by: "", type: "" },
+          doors: 8,
+          shelves: 8,
+          shelfWidths: Array(8).fill(10),
+          doorNames: [],
+          grid: makeGrid(8, 8, Array(8).fill(10)),
+          flavorGrid: makeFlavorGrid(8, 8, Array(8).fill(10)),
+          brandRowGrid: makeFlavorGrid(8, 8, Array(8).fill(10)),
+        };
+      }
+
+      function makeGrid(shelves, doors, widths) {
+        return Array.from({ length: shelves }, (_, s) =>
+          Array.from({ length: doors }, () =>
+            Array(widths[s] || 10).fill(null),
+          ),
+        );
+      }
+
+      function makeFlavorGrid(shelves, doors, widths) {
+        return Array.from({ length: shelves }, (_, s) =>
+          Array.from({ length: doors }, () => Array(widths[s] || 10).fill("")),
+        );
+      }
+
+      // ═══════════════════════════════════════════════════
+      //  PERSISTENCE
+      // ═══════════════════════════════════════════════════
+      function loadState() {
+        try {
+          const raw = localStorage.getItem("plano_v1");
+          if (raw) S = JSON.parse(raw);
+        } catch (e) {}
+        if (!S) S = defaultState();
+        // Back-compat: ensure flavorGrid exists and matches grid dimensions
+        if (!S.flavorGrid) {
+          S.flavorGrid = makeFlavorGrid(S.shelves, S.doors, S.shelfWidths);
+        }
+        if (!S.brandRowGrid) {
+          S.brandRowGrid = makeFlavorGrid(S.shelves, S.doors, S.shelfWidths);
+        }
+        if (!S.doorNames) S.doorNames = [];
+        // Migrate old non-sequential IDs to new 1-10 sequential IDs (runs once on old saves)
+        const needsRemap = S.products.some(
+          (p) => p.id === 8 && p.name === "7.5oz Can",
+        );
+        if (needsRemap) {
+          const ID_REMAP = {
+            1: 1,
+            2: 2,
+            8: 3,
+            9: 4,
+            3: 5,
+            4: 6,
+            10: 7,
+            5: 8,
+            6: 9,
+            7: 10,
+          };
+          S.products.forEach((p) => {
+            if (ID_REMAP[p.id] != null) p.id = ID_REMAP[p.id];
+          });
+          for (let s = 0; s < (S.grid?.length || 0); s++)
+            for (let d = 0; d < (S.grid[s]?.length || 0); d++)
+              for (let sl = 0; sl < (S.grid[s][d]?.length || 0); sl++)
+                if (
+                  S.grid[s][d][sl] !== null &&
+                  ID_REMAP[S.grid[s][d][sl]] != null
+                )
+                  S.grid[s][d][sl] = ID_REMAP[S.grid[s][d][sl]];
+          saveState();
+        }
+        // Add any products that exist in DEFAULT_PRODUCTS but not in saved state,
+        // and sync color/name/size/desc from DEFAULT_PRODUCTS so code-level changes take effect
+        DEFAULT_PRODUCTS.forEach((dp) => {
+          const existing = S.products.find((p) => p.id === dp.id);
+          if (!existing) {
+            S.products.push({ ...dp });
+          } else {
+            existing.color = dp.color;
+            existing.name = dp.name;
+            existing.size = dp.size;
+            existing.desc = dp.desc;
+          }
+        });
+        // Keep products sorted to match DEFAULT_PRODUCTS display order
+        const orderMap = Object.fromEntries(
+          DEFAULT_PRODUCTS.map((p, i) => [p.id, i]),
+        );
+        S.products.sort(
+          (a, b) => (orderMap[a.id] ?? 999) - (orderMap[b.id] ?? 999),
+        );
+      }
+
+      function saveState() {
+        try {
+          localStorage.setItem("plano_v1", JSON.stringify(S));
+        } catch (e) {}
+      }
+
+      async function resetAll() {
+        if (!(await showConfirm("Reset everything and start fresh?", true)))
+          return;
+        localStorage.removeItem("plano_v1");
+        S = defaultState();
+        syncInputs();
+        renderProductTable();
+        renderBuilder();
+      }
+
+      // ═══════════════════════════════════════════════════
+      //  PAGE NAV
+      // ═══════════════════════════════════════════════════
+      function showPage(name, tab) {
+        document
+          .querySelectorAll(".page")
+          .forEach((p) => p.classList.remove("active"));
+        document
+          .querySelectorAll(".nav-tab")
+          .forEach((t) => t.classList.remove("active"));
+        document.getElementById("page-" + name).classList.add("active");
+        tab.classList.add("active");
+        if (name === "products") renderProductTable();
+        if (name === "builder") renderBuilder();
+      }
+
+      // ═══════════════════════════════════════════════════
+      //  PRODUCTS PAGE
+      // ═══════════════════════════════════════════════════
+      function renderProductTable() {
+        const tbody = document.getElementById("product-tbody");
+        tbody.innerHTML = "";
+        S.products.forEach((p) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+      <td><strong style="color:#1a3c5e">${p.id}</strong></td>
+      <td><div class="color-swatch" style="background:${p.color}"></div></td>
+      <td><strong>${p.name}</strong></td>
+      <td style="color:#666">${p.size}</td>
+      <td style="color:#999;font-size:12px">${p.desc}</td>
+      <td><button class="btn btn-light btn-sm" onclick="openEditModal(${p.id})">Edit</button></td>
+    `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      // ═══════════════════════════════════════════════════
+      //  EDIT MODAL
+      // ═══════════════════════════════════════════════════
+      function openEditModal(id) {
+        editingPid = id;
+        const p = S.products.find((x) => x.id === id);
+        document.getElementById("modal-title").textContent = "Edit Product";
+        document.getElementById("edit-name").value = p.name;
+        document.getElementById("edit-size").value = p.size;
+        document.getElementById("edit-desc").value = p.desc;
+        document.getElementById("edit-color").value = p.color;
+        document.getElementById("edit-modal").style.display = "flex";
+      }
+      function openAddModal() {
+        editingPid = null;
+        document.getElementById("modal-title").textContent = "Add Product Size";
+        document.getElementById("edit-name").value = "";
+        document.getElementById("edit-size").value = "";
+        document.getElementById("edit-desc").value = "";
+        document.getElementById("edit-color").value = "#4A90D9";
+        document.getElementById("edit-modal").style.display = "flex";
+        document.getElementById("edit-name").focus();
+      }
+      function onBackdropClick(e) {
+        if (e.target.id === "edit-modal") closeModal();
+      }
+      function closeModal() {
+        document.getElementById("edit-modal").style.display = "none";
+        editingPid = null;
+      }
+      async function saveProduct() {
+        if (editingPid === null) {
+          // Add new product
+          const name = document.getElementById("edit-name").value.trim();
+          const size = document.getElementById("edit-size").value.trim();
+          if (!name || !size) {
+            await showAlert("Product Name and Size are required.");
+            return;
+          }
+          const nextId =
+            S.products.reduce((max, p) => Math.max(max, p.id), 0) + 1;
+          S.products.push({
+            id: nextId,
+            name,
+            size,
+            desc: document.getElementById("edit-desc").value.trim(),
+            color: document.getElementById("edit-color").value,
+          });
+        } else {
+          const p = S.products.find((x) => x.id === editingPid);
+          p.name = document.getElementById("edit-name").value.trim() || p.name;
+          p.size = document.getElementById("edit-size").value.trim() || p.size;
+          p.desc = document.getElementById("edit-desc").value.trim();
+          p.color = document.getElementById("edit-color").value;
+        }
+        saveState();
+        closeModal();
+        renderProductTable();
+        // Refresh builder visuals if open
+        if (
+          document.getElementById("page-builder").classList.contains("active")
+        ) {
+          renderPalette();
+          renderPlanogram();
+        }
+      }
+
+      // ═══════════════════════════════════════════════════
+      //  BUILDER — config helpers (more in next batch)
+      // ═══════════════════════════════════════════════════
+      function syncInputs() {
+        document.getElementById("cfg-store").value = S.meta.store;
+        document.getElementById("cfg-type").value = S.meta.type || "";
+        document.getElementById("cfg-date").value = S.meta.date;
+        document.getElementById("cfg-by").value = S.meta.by;
+        document.getElementById("cfg-doors").value = S.doors;
+        document.getElementById("cfg-shelves").value = S.shelves;
+        document.getElementById("cfg-slots").value = S.shelfWidths[0] || 10;
+      }
+
+      function updateMeta() {
+        S.meta.store = document.getElementById("cfg-store").value;
+        S.meta.type = document.getElementById("cfg-type").value;
+        S.meta.date = document.getElementById("cfg-date").value;
+        S.meta.by = document.getElementById("cfg-by").value;
+        const s = document.getElementById("meta-store");
+        if (s) {
+          s.textContent = S.meta.store || "_______________";
+          document.getElementById("meta-date").textContent =
+            S.meta.date || "___________";
+          document.getElementById("meta-by").textContent =
+            S.meta.by || "___________";
+          const tEl = document.getElementById("plano-type");
+          if (tEl) tEl.textContent = S.meta.type || "Cooler";
+        }
+        saveState();
+        generatePrintLayout();
+      }
+
+      // ═══════════════════════════════════════════════════
+      //  GRID HELPERS
+      // ═══════════════════════════════════════════════════
+      function growGrid() {
+        const { shelves, doors, shelfWidths, grid } = S;
+        if (!S.flavorGrid) S.flavorGrid = [];
+        if (!S.brandRowGrid) S.brandRowGrid = [];
+        const flavorGrid = S.flavorGrid;
+        const brandRowGrid = S.brandRowGrid;
+
+        while (shelfWidths.length < shelves)
+          shelfWidths.push(shelfWidths[shelfWidths.length - 1] || 10);
+
+        while (grid.length < shelves) {
+          const s = grid.length;
+          grid.push(
+            Array.from({ length: doors }, () =>
+              Array(shelfWidths[s]).fill(null),
+            ),
+          );
+        }
+        while (flavorGrid.length < shelves) {
+          const s = flavorGrid.length;
+          flavorGrid.push(
+            Array.from({ length: doors }, () => Array(shelfWidths[s]).fill("")),
+          );
+        }
+        while (brandRowGrid.length < shelves) {
+          const s = brandRowGrid.length;
+          brandRowGrid.push(
+            Array.from({ length: doors }, () => Array(shelfWidths[s]).fill("")),
+          );
+        }
+
+        for (let s = 0; s < shelves; s++) {
+          while (grid[s].length < doors)
+            grid[s].push(Array(shelfWidths[s]).fill(null));
+          while (flavorGrid[s].length < doors)
+            flavorGrid[s].push(Array(shelfWidths[s]).fill(""));
+          while (brandRowGrid[s].length < doors)
+            brandRowGrid[s].push(Array(shelfWidths[s]).fill(""));
+          for (let d = 0; d < doors; d++) {
+            const w = shelfWidths[s];
+            const cur = grid[s][d];
+            while (cur.length < w) cur.push(null);
+            if (cur.length > w) cur.length = w;
+            const fc = flavorGrid[s][d];
+            while (fc.length < w) fc.push("");
+            if (fc.length > w) fc.length = w;
+            const brc = brandRowGrid[s][d];
+            while (brc.length < w) brc.push("");
+            if (brc.length > w) brc.length = w;
+          }
+        }
+      }
+
+      // ═══════════════════════════════════════════════════
+      //  APPLY CONFIG
+      // ═══════════════════════════════════════════════════
+      async function applyConfig() {
+        const doors = Math.max(
+          1,
+          Math.min(20, +document.getElementById("cfg-doors").value || 8),
+        );
+        const shelves = Math.max(
+          1,
+          Math.min(20, +document.getElementById("cfg-shelves").value || 8),
+        );
+        const slots = Math.max(
+          1,
+          Math.min(30, +document.getElementById("cfg-slots").value || 10),
+        );
+
+        S.doors = doors;
+        S.shelves = shelves;
+        while (S.doorNames.length < doors) S.doorNames.push("");
+        // Grow shelfWidths; only reset widths if user confirms
+        while (S.shelfWidths.length < shelves) S.shelfWidths.push(slots);
+        S.shelfWidths.length = shelves;
+        if (await showConfirm("Set ALL shelf widths to " + slots + " slots?")) {
+          S.shelfWidths = Array(shelves).fill(slots);
+        }
+        growGrid();
+        S.grid.length = shelves;
+        for (let s = 0; s < shelves; s++) S.grid[s].length = doors;
+        renderBuilder();
+        saveState();
+      }
+
+      // ═══════════════════════════════════════════════════
+      //  PALETTE
+      // ═══════════════════════════════════════════════════
+      function selectProduct(id) {
+        activePid = id;
+        renderPalette();
+      }
+
+      function renderPalette() {
+        const el = document.getElementById("palette");
+        el.innerHTML = "";
+        S.products.forEach((p) => {
+          const div = document.createElement("div");
+          div.className =
+            "palette-item" + (activePid === p.id ? " active" : "");
+          div.onclick = () => selectProduct(p.id);
+          div.innerHTML = `
+      <div class="palette-chip" style="background:${p.color}">${p.id}</div>
+      <div>
+        <div class="palette-name">${p.name}</div>
+        <div class="palette-size">${p.size}</div>
+      </div>`;
+          el.appendChild(div);
+        });
+        const er = document.getElementById("eraser-row");
+        er.className = "eraser-row" + (activePid === null ? " active" : "");
+      }
+
+      // ═══════════════════════════════════════════════════
+      //  SHELF WIDTH CONTROLS
+      // ═══════════════════════════════════════════════════
+      function renderShelfWidthControls() {
+        const el = document.getElementById("sw-controls");
+        el.innerHTML = "";
+        for (let s = 0; s < S.shelves; s++) {
+          const row = document.createElement("div");
+          row.className = "sw-row";
+          row.innerHTML = `
+      <label>Shelf ${s + 1}</label>
+      <input type="number" min="1" max="30" value="${S.shelfWidths[s] || 10}"
+             onchange="setShelfWidth(${s}, this.value)">`;
+          el.appendChild(row);
+        }
+      }
+
+      function setShelfWidth(shelfIdx, val) {
+        const w = Math.max(1, Math.min(30, parseInt(val) || 10));
+        S.shelfWidths[shelfIdx] = w;
+        for (let d = 0; d < S.doors; d++) {
+          const cur = S.grid[shelfIdx][d];
+          while (cur.length < w) cur.push(null);
+          if (cur.length > w) cur.length = w;
+          const fc = S.flavorGrid[shelfIdx][d];
+          while (fc.length < w) fc.push("");
+          if (fc.length > w) fc.length = w;
+          const brc = S.brandRowGrid[shelfIdx][d];
+          while (brc.length < w) brc.push("");
+          if (brc.length > w) brc.length = w;
+        }
+        renderPlanogram();
+        renderSummary();
+        saveState();
+      }
+
+      // ═══════════════════════════════════════════════════
+      //  SUMMARY
+      // ═══════════════════════════════════════════════════
+      function renderSummary() {
+        const totalSlots =
+          S.shelfWidths.slice(0, S.shelves).reduce((a, b) => a + b, 0) *
+          S.doors;
+        const counts = {};
+        S.products.forEach((p) => (counts[p.id] = 0));
+        let filled = 0;
+        for (let s = 0; s < S.shelves; s++)
+          for (let d = 0; d < S.doors; d++)
+            for (const v of S.grid[s]?.[d] || [])
+              if (v !== null) {
+                filled++;
+                counts[v] = (counts[v] || 0) + 1;
+              }
+
+        let html = `
+    <tr><td>Doors</td><td>${S.doors}</td></tr>
+    <tr><td>Shelves / Door</td><td>${S.shelves}</td></tr>
+    <tr><td>Total Slots</td><td>${totalSlots}</td></tr>
+    <tr><td>Filled</td><td>${filled}</td></tr>
+    <tr><td>Empty</td><td>${totalSlots - filled}</td></tr>
+    <tr><td style="padding-top:8px;font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.4px;font-weight:700">By Product Sizes</td><td></td></tr>`;
+        S.products.forEach((p) => {
+          html += `<tr>
+      <td><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${p.color};margin-right:4px;vertical-align:middle"></span>${p.size}</td>
+      <td>${counts[p.id] || 0}</td>
+    </tr>`;
+        });
+        document.getElementById("sum-table").innerHTML = html;
+      }
+
+      // ═══════════════════════════════════════════════════
+      //  RENDER BUILDER (orchestrator)
+      // ═══════════════════════════════════════════════════
+      function renderBuilder() {
+        growGrid();
+        renderPalette();
+        renderShelfWidthControls();
+        renderPlanogram();
+        renderSummary();
+      }
+
+      // ═══════════════════════════════════════════════════
+      //  PAINT MODE
+      // ═══════════════════════════════════════════════════
+      let paintMode = "flavor";
+
+      function setPaintMode(mode) {
+        paintMode = mode;
+        document
+          .getElementById("brand-label-section")
+          ?.classList.toggle("paint-active", mode === "brand");
+        document
+          .getElementById("flavor-label-section")
+          ?.classList.toggle("paint-active", mode === "flavor");
+      }
+
+      function clearBrandLabel() {
+        const el = document.getElementById("active-top-brand");
+        if (el) {
+          el.value = "";
+          el.blur();
+        }
+      }
+
+      function clearFlavorLabel() {
+        const el = document.getElementById("active-flavor");
+        if (el) {
+          el.value = "";
+          el.blur();
+        }
+      }
+
+      // ═══════════════════════════════════════════════════
+      //  BRAND ROW BUILDER
+      // ═══════════════════════════════════════════════════
+      function buildBrandRowHeaderHTML(
+        slots,
+        brandRow,
+        products,
+        slotW = SLOT_W,
+      ) {
+        const runs = [];
+        let i = 0;
+        while (i < slots.length) {
+          const b = brandRow[i] || "";
+          let j = i + 1;
+          while (j < slots.length && (brandRow[j] || "") === b) j++;
+          runs.push({ brand: b, slots: slots.slice(i, j), count: j - i });
+          i = j;
+        }
+
+        const totalW =
+          slots.length * slotW + Math.max(0, slots.length - 1) * SLOT_GAP;
+        let html = `<div class="brand-row-header" style="width:${totalW}px">`;
+        runs.forEach((r) => {
+          const w = r.count * slotW + (r.count - 1) * SLOT_GAP;
+          if (r.brand) {
+            const pid = r.slots[0];
+            const p = pid !== null ? products.find((x) => x.id === pid) : null;
+            const bg = p ? p.color : "#888";
+            html += `<div class="brand-row-seg" style="width:${w}px;background:${bg}" title="${r.brand}">${r.brand}</div>`;
+          } else {
+            html += `<div class="brand-row-seg no-brand-row" style="width:${w}px"></div>`;
+          }
+        });
+        html += "</div>";
+        return html;
+      }
+
+      // ═══════════════════════════════════════════════════
+      //  FLAVOR HEADER BUILDER
+      // ═══════════════════════════════════════════════════
+      const SLOT_W = 45, // must match CSS .slot width
+        PRINT_SLOT_W = 38, // must match @media print .slot width
+        SLOT_GAP = 2; // must match CSS .slots-row gap
+
+      function buildFlavorHeaderHTML(slots, flavors, s, d, slotW = SLOT_W) {
+        const runs = [];
+        let i = 0;
+        while (i < slots.length) {
+          const f = flavors[i] || "";
+          const pid = slots[i];
+          let j = i + 1;
+          while (j < slots.length && (flavors[j] || "") === f) j++;
+          runs.push({ flavor: f, pid, count: j - i, start: i });
+          i = j;
+        }
+
+        const legend = [];
+        let legendNum = 0;
+        const flavorToNum = {};
+
+        const totalW =
+          slots.length * slotW + Math.max(0, slots.length - 1) * SLOT_GAP;
+        let html = `<div class="flavor-header" style="width:${totalW}px">`;
+        runs.forEach((r) => {
+          const w = r.count * slotW + (r.count - 1) * SLOT_GAP;
+          if (r.flavor) {
+            const bg = getFlavorColor(r.flavor);
+            if (r.count < 2) {
+              if (!(r.flavor in flavorToNum)) {
+                legendNum++;
+                flavorToNum[r.flavor] = legendNum;
+                legend.push({ num: legendNum, flavor: r.flavor, color: bg });
+              }
+              html += `<div class="flavor-seg" style="width:${w}px;background:${bg}" title="${r.flavor}">${flavorToNum[r.flavor]}</div>`;
+            } else {
+              html += `<div class="flavor-seg" style="width:${w}px;background:${bg}" title="${r.flavor}">${r.flavor}</div>`;
+            }
+          } else {
+            html += `<div class="flavor-seg no-flavor" style="width:${w}px"></div>`;
+          }
+        });
+        html += "</div>";
+        return { headerHTML: html, legend };
+      }
+
+      function buildCellLegendHTML(legend) {
+        if (!legend || legend.length === 0) return "";
+        let html = '<div class="cell-legend">';
+        legend.forEach((item) => {
+          html += `<div class="cell-legend-item">
+      <span class="cell-legend-num" style="background:${item.color}">${item.num}</span>
+      <span class="cell-legend-flavor">${item.flavor}</span>
+    </div>`;
+        });
+        return html + "</div>";
+      }
+
+      // ═══════════════════════════════════════════════════
+      //  PLANOGRAM GRID
+      // ═══════════════════════════════════════════════════
+      function slotLabel(p) {
+        return p.size.replace(" ", "");
+      }
+
+      function renderPlanogram() {
+        resetFlavorColorMap();
+        const { doors, shelves, meta, products, shelfWidths, grid } = S;
+        const c = document.getElementById("planogram-container");
+
+        // ── Header ──────────────────────────────────────
+        let html = `
+    <div class="plano-header">
+      <div class="plano-title">
+        <span id="plano-type">${meta.type || "Cooler"}</span> Planogram &mdash; ${doors} Door${doors > 1 ? "s" : ""} | ${shelves} Shel${shelves > 1 ? "ves" : "f"}
+      </div>
+      <div class="plano-meta">
+        <span>Store:&nbsp;<strong id="meta-store">${meta.store || "_______________"}</strong></span>
+        <span>Date:&nbsp;<strong id="meta-date">${meta.date || "___________"}</strong></span>
+        <span>Planogram By:&nbsp;<strong id="meta-by">${meta.by || "___________"}</strong></span>
+      </div>
+    </div>`;
+
+        // ── Grid table ───────────────────────────────────
+        html += `<table class="plano-table"><thead><tr>`;
+        html += `<th class="corner">SHELF</th>`;
+        for (let d = 0; d < doors; d++) {
+          const col = DOOR_COLORS[d % DOOR_COLORS.length];
+          const dName = S.doorNames[d] || `DOOR ${d + 1}`;
+          html += `<th class="door-hdr" data-door="${d}" style="background:${col}" onclick="editDoorName(${d},this)" title="Click to rename">${dName}</th>`;
+        }
+        html += `</tr></thead><tbody>`;
+
+        for (let s = 0; s < shelves; s++) {
+          html += `<tr><td class="shelf-num">${s + 1}</td>`;
+          for (let d = 0; d < doors; d++) {
+            const slots = grid[s]?.[d] || [];
+            const flavors = S.flavorGrid[s]?.[d] || [];
+            const brandRow = S.brandRowGrid[s]?.[d] || [];
+            const { headerHTML: _bh, legend: _bl } = buildFlavorHeaderHTML(
+              slots,
+              flavors,
+              s,
+              d,
+            );
+            html += `<td class="door-cell">`;
+            html += buildBrandRowHeaderHTML(slots, brandRow, products);
+            html += _bh;
+            html += `<div class="slots-row">`;
+            slots.forEach((pid, sl) => {
+              const p =
+                pid !== null ? products.find((x) => x.id === pid) : null;
+              const flavor = flavors[sl] || "";
+              const titleStr = p
+                ? flavor
+                  ? `${flavor} — ${p.name} (${p.size})`
+                  : `${p.name} (${p.size})`
+                : "Empty";
+              html += `<div class="slot ${p ? "" : "empty"}"
+                      style="${p ? "background:" + p.color : ""}"
+                      title="${titleStr}"
+                      data-s="${s}" data-d="${d}" data-sl="${sl}">
+                   <span class="slot-num">${p ? slotLabel(p) : ""}</span>
+                 </div>`;
+            });
+            html += `</div>`;
+            html += buildCellLegendHTML(_bl);
+            html += `</td>`;
+          }
+          html += `</tr>`;
+        }
+        html += `</tbody></table>`;
+        html += `<p style="margin-top:20px;font-size:11px;color:#aaa">
+    Select a product in the sidebar to fill slots &mdash; or type a Brand / Flavor label and paint to apply naming.
+  </p>`;
+
+        c.innerHTML = html;
+
+        // Attach click + drag + touch listeners after DOM update
+        c.querySelectorAll(".slot").forEach((el) => {
+          el.addEventListener("mousedown", (e) => {
+            e.preventDefault();
+            paintSlot(el);
+          });
+          el.addEventListener("mouseenter", () => {
+            if (isPainting) paintSlot(el);
+          });
+          el.addEventListener(
+            "touchstart",
+            (e) => {
+              e.preventDefault();
+              isPainting = true;
+              paintSlot(el);
+            },
+            { passive: false },
+          );
+        });
+
+        // Touch drag — find slot under finger via elementFromPoint
+        c.addEventListener(
+          "touchmove",
+          (e) => {
+            if (!isPainting) return;
+            e.preventDefault();
+            const t = e.touches[0];
+            const target = document.elementFromPoint(t.clientX, t.clientY);
+            const slot = target?.closest?.("[data-s]");
+            if (slot) paintSlot(slot);
+          },
+          { passive: false },
+        );
+
+        c.addEventListener("touchend", () => {
+          isPainting = false;
+        });
+
+        generatePrintLayout();
+      }
+
+      // ═══════════════════════════════════════════════════
+      //  PRINT LAYOUT (paginated: 24 slots wide, 8 shelves tall)
+      // ═══════════════════════════════════════════════════
+      function generatePrintLayout() {
+        const PRINT_SLOTS_PER_PAGE = 24;
+        const PRINT_SHELVES_PER_PAGE = 8;
+        const { doors, shelves, meta, products, shelfWidths, grid } = S;
+
+        const maxSlotsPerDoor = Math.max(...shelfWidths.slice(0, shelves));
+
+        // Group doors so total slots across ≤ PRINT_SLOTS_PER_PAGE
+        const doorGroups = [];
+        let curGroup = [],
+          curSlots = 0;
+        for (let d = 0; d < doors; d++) {
+          if (
+            curSlots > 0 &&
+            curSlots + maxSlotsPerDoor > PRINT_SLOTS_PER_PAGE
+          ) {
+            doorGroups.push(curGroup);
+            curGroup = [];
+            curSlots = 0;
+          }
+          curGroup.push(d);
+          curSlots += maxSlotsPerDoor;
+        }
+        if (curGroup.length > 0) doorGroups.push(curGroup);
+
+        // Group shelves into blocks of PRINT_SHELVES_PER_PAGE
+        const shelfGroups = [];
+        for (let s = 0; s < shelves; s += PRINT_SHELVES_PER_PAGE)
+          shelfGroups.push({
+            start: s,
+            end: Math.min(s + PRINT_SHELVES_PER_PAGE, shelves),
+          });
+
+        const totalPages = doorGroups.length * shelfGroups.length;
+        let pageIdx = 0,
+          html = "";
+
+        for (const sg of shelfGroups) {
+          for (const dg of doorGroups) {
+            pageIdx++;
+            const isLast = pageIdx === totalPages;
+            html += `<div class="print-page${isLast ? "" : " page-break"}">`;
+
+            // Page header
+            html += `<div class="print-page-header">
+        <div class="plano-title">${meta.type || "Cooler"} Planogram &mdash; ${doors} Door${doors !== 1 ? "s" : ""} | ${shelves} Shel${shelves !== 1 ? "ves" : "f"}</div>
+        <div class="plano-meta">
+          <span>Store:&nbsp;<strong>${meta.store || "_______________"}</strong></span>
+          <span>Date:&nbsp;<strong>${meta.date || "___________"}</strong></span>
+          <span>Planogram By:&nbsp;<strong>${meta.by || "___________"}</strong></span>
+        </div>
+      </div>`;
+
+            // Product key
+            html += `<div class="product-key"><span class="key-label">Key:</span>`;
+            products.forEach((p) => {
+              html += `<div class="key-item">
+                <div class="key-chip" style="background:${p.color}"></div>
+                <span>${p.name} (${p.size})</span>
+              </div>`;
+            });
+            html += `</div>`;
+
+            // Grid — single table per logical print page so thead auto-repeats on each physical page
+            html += `<table class="plano-table"><thead><tr><th class="corner">SHELF</th>`;
+            dg.forEach((d) => {
+              const col = DOOR_COLORS[d % DOOR_COLORS.length];
+              const dName = S.doorNames[d] || `DOOR ${d + 1}`;
+              html += `<th class="door-hdr" style="background:${col}">${dName}</th>`;
+            });
+            html += `</tr></thead><tbody>`;
+
+            for (let s = sg.start; s < sg.end; s++) {
+              html += `<tr><td class="shelf-num">${s + 1}</td>`;
+              dg.forEach((d) => {
+                const slots = grid[s]?.[d] || [];
+                const flavors = S.flavorGrid[s]?.[d] || [];
+                const brandRow = S.brandRowGrid[s]?.[d] || [];
+                const { headerHTML: _ph, legend: _pl } = buildFlavorHeaderHTML(
+                  slots,
+                  flavors,
+                  s,
+                  d,
+                  PRINT_SLOT_W,
+                );
+                html += `<td class="door-cell">`;
+                html += buildBrandRowHeaderHTML(
+                  slots,
+                  brandRow,
+                  products,
+                  PRINT_SLOT_W,
+                );
+                html += _ph;
+                html += `<div class="slots-row">`;
+                slots.forEach((pid) => {
+                  const p =
+                    pid !== null ? products.find((x) => x.id === pid) : null;
+                  html += `<div class="slot${p ? "" : " empty"}" style="${p ? "background:" + p.color : ""}">
+              <span class="slot-num">${p ? slotLabel(p) : ""}</span>
+            </div>`;
+                });
+                html += `</div>`;
+                html += buildCellLegendHTML(_pl);
+                html += `</td>`;
+              });
+              html += `</tr>`;
+            }
+
+            html += `</tbody></table></div>`;
+          }
+        }
+
+        const el = document.getElementById("print-planogram");
+        if (el) el.innerHTML = html;
+      }
+
+      // ═══════════════════════════════════════════════════
+      //  BRAND HISTORY QUICK-SELECT
+      // ═══════════════════════════════════════════════════
+      const flavorHistory = new Set();
+
+      function getActiveFlavor() {
+        return (document.getElementById("active-flavor")?.value || "").trim();
+      }
+
+      function pickFlavor(name) {
+        const input = document.getElementById("active-flavor");
+        if (input) input.value = name;
+      }
+
+      function addToFlavorHistory(name) {
+        if (!name) return;
+        flavorHistory.add(name);
+        const el = document.getElementById("flavor-history");
+        if (!el) return;
+        el.innerHTML = "";
+        flavorHistory.forEach((b) => {
+          const pill = document.createElement("div");
+          pill.style.cssText =
+            "cursor:pointer;background:#e8f0fe;border:1px solid #c5d8ff;border-radius:10px;padding:2px 8px;font-size:11px;font-weight:700;color:#1a3c5e";
+          pill.textContent = b;
+          pill.onclick = () => pickFlavor(b);
+          el.appendChild(pill);
+        });
+      }
+
+      // ── Top Brand History ────────────────────────────────
+      const topBrandHistory = new Set();
+
+      function addToTopBrandHistory(name) {
+        if (!name) return;
+        topBrandHistory.add(name);
+        const el = document.getElementById("top-brand-history");
+        if (!el) return;
+        el.innerHTML = "";
+        topBrandHistory.forEach((b) => {
+          const pill = document.createElement("div");
+          pill.style.cssText =
+            "cursor:pointer;background:#fde8c8;border:1px solid #f5b97f;border-radius:10px;padding:2px 8px;font-size:11px;font-weight:700;color:#7a3800";
+          pill.textContent = b;
+          pill.onclick = () => {
+            document.getElementById("active-top-brand").value = b;
+            setPaintMode("brand");
+          };
+          el.appendChild(pill);
+        });
+      }
+
+      // ═══════════════════════════════════════════════════
+      //  SLOT PAINTING
+      // ═══════════════════════════════════════════════════
+      let isPainting = false;
+      document.addEventListener("mousedown", () => {
+        isPainting = true;
+      });
+      document.addEventListener("mouseup", () => {
+        isPainting = false;
+      });
+      document.addEventListener("touchend", () => {
+        isPainting = false;
+      });
+
+      function paintSlot(el) {
+        const s = +el.dataset.s;
+        const d = +el.dataset.d;
+        const sl = +el.dataset.sl;
+
+        if (paintMode === "brand") {
+          const brandName = (
+            document.getElementById("active-top-brand")?.value || ""
+          ).trim();
+          if (!S.brandRowGrid[s]) S.brandRowGrid[s] = [];
+          if (!S.brandRowGrid[s][d]) S.brandRowGrid[s][d] = [];
+          S.brandRowGrid[s][d][sl] = brandName;
+          if (brandName) addToTopBrandHistory(brandName);
+          const cell = el.closest(".door-cell");
+          if (cell) refreshBrandRowHeader(cell, s, d);
+          saveState();
+          generatePrintLayout();
+          return;
+        }
+
+        const flavor = getActiveFlavor();
+        S.grid[s][d][sl] = activePid;
+        if (!S.flavorGrid[s]) S.flavorGrid[s] = [];
+        if (!S.flavorGrid[s][d]) S.flavorGrid[s][d] = [];
+        S.flavorGrid[s][d][sl] = activePid !== null ? flavor : "";
+
+        const p =
+          activePid !== null
+            ? S.products.find((x) => x.id === activePid)
+            : null;
+        if (p) {
+          el.className = "slot";
+          el.style.background = p.color;
+          const title = flavor
+            ? `${flavor} — ${p.name} (${p.size})`
+            : `${p.name} (${p.size})`;
+          el.title = title;
+          el.querySelector(".slot-num").textContent = slotLabel(p);
+        } else {
+          el.className = "slot empty";
+          el.style.background = "";
+          el.title = "Empty";
+          el.querySelector(".slot-num").textContent = "";
+        }
+
+        if (flavor && activePid !== null) addToFlavorHistory(flavor);
+
+        const cell = el.closest(".door-cell");
+        if (cell) refreshFlavorHeader(cell, s, d);
+        if (cell) refreshBrandRowHeader(cell, s, d);
+
+        renderSummary();
+        saveState();
+        generatePrintLayout();
+      }
+
+      function refreshFlavorHeader(cell, s, d) {
+        const old = cell.querySelector(".flavor-header");
+        if (!old) return;
+        const slots = S.grid[s]?.[d] || [];
+        const flavors = S.flavorGrid[s]?.[d] || [];
+        const { headerHTML, legend } = buildFlavorHeaderHTML(
+          slots,
+          flavors,
+          s,
+          d,
+        );
+        old.outerHTML = headerHTML;
+        const legendEl = cell.querySelector(".cell-legend");
+        const legendHTML = buildCellLegendHTML(legend);
+        if (legendHTML) {
+          if (legendEl) legendEl.outerHTML = legendHTML;
+          else
+            cell
+              .querySelector(".slots-row")
+              ?.insertAdjacentHTML("afterend", legendHTML);
+        } else if (legendEl) {
+          legendEl.remove();
+        }
+      }
+
+      function refreshBrandRowHeader(cell, s, d) {
+        const old = cell.querySelector(".brand-row-header");
+        if (!old) return;
+        const slots = S.grid[s]?.[d] || [];
+        const brandRow = S.brandRowGrid[s]?.[d] || [];
+        old.outerHTML = buildBrandRowHeaderHTML(slots, brandRow, S.products);
+      }
+
+      // ═══════════════════════════════════════════════════
+      //  DOOR NAME EDITING
+      // ═══════════════════════════════════════════════════
+      function editDoorName(d, th) {
+        const current = S.doorNames[d] || `DOOR ${d + 1}`;
+        th.removeAttribute("onclick");
+
+        const input = document.createElement("input");
+        input.className = "door-name-input";
+        input.value = current;
+        th.textContent = "";
+        th.appendChild(input);
+        input.focus();
+        input.select();
+
+        const save = () => {
+          const val = input.value.trim() || `DOOR ${d + 1}`;
+          S.doorNames[d] = val;
+          saveState();
+          generatePrintLayout();
+          th.textContent = val;
+          th.setAttribute("onclick", `editDoorName(${d},this)`);
+        };
+
+        input.addEventListener("blur", save);
+        input.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            input.blur();
+          }
+          if (e.key === "Escape") {
+            input.value = current;
+            input.blur();
+          }
+        });
+        input.addEventListener("click", (e) => e.stopPropagation());
+      }
+
+      // ═══════════════════════════════════════════════════
+      //  INIT
+      // ═══════════════════════════════════════════════════
+      loadState();
+      syncInputs();
+      renderProductTable();
+      renderBuilder(); // so print works even before switching tabs
+      setPaintMode("flavor");
+
+      // Touch-only: tap anywhere on the section to activate that paint mode
+      // (excludes the clear button and the input itself so those still work normally)
+      document.getElementById("brand-label-section").addEventListener(
+        "touchstart",
+        (e) => {
+          if (e.target.closest(".clear-label-btn") || e.target.closest("input"))
+            return;
+          setPaintMode("brand");
+        },
+        { passive: true },
+      );
+
+      document.getElementById("flavor-label-section").addEventListener(
+        "touchstart",
+        (e) => {
+          if (e.target.closest(".clear-label-btn") || e.target.closest("input"))
+            return;
+          setPaintMode("flavor");
+        },
+        { passive: true },
+      );
+    </script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("./sw.js");
+      }
+    </script>
+  </body>
+</html>
