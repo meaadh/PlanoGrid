@@ -342,10 +342,21 @@ function exportOriginalJSON() {
   downloadJSON(`planogram-original-${timestamp()}.json`, S);
 }
 
-// Flat list of filled slots: { door, shelf, position, product, size }
+// Local-time "YYYY-MM-DDTHH:MM:SS" (no ms, no zone) for the exportedAt field
+function isoTimestampLocal() {
+  const d = new Date();
+  const pad = (n) => String(n).padStart(2, "0");
+  return (
+    `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}` +
+    `T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
+  );
+}
+
+// { name, type, version, exportedAt, placements: [{ door, shelf, position, product, size }] }
 function exportModifiedJSON() {
   document.getElementById("export-menu").classList.remove("open");
-  const out = [];
+  const planoType = (S.meta.type || "Cooler").trim();
+  const placements = [];
   for (let s = 0; s < S.shelves; s++) {
     for (let d = 0; d < S.doors; d++) {
       const slots = S.grid[s]?.[d] || [];
@@ -358,7 +369,7 @@ function exportModifiedJSON() {
         const brand = (brandRow[sl] || "").trim();
         const flavor = (flavors[sl] || "").trim();
         const label = [brand, flavor].filter(Boolean).join(" ");
-        out.push({
+        placements.push({
           door: d + 1,
           shelf: s + 1,
           position: sl + 1,
@@ -368,6 +379,13 @@ function exportModifiedJSON() {
       });
     }
   }
+  const out = {
+    name: `${planoType} Planogram`,
+    type: planoType.toLowerCase(),
+    version: 1,
+    exportedAt: isoTimestampLocal(),
+    placements,
+  };
   downloadJSON(`planogram-modified-${timestamp()}.json`, out);
 }
 
